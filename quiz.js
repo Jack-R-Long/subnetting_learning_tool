@@ -1,4 +1,56 @@
 // Functions
+function generateData() {
+    // Generate random IP address.  Only Class A, B, C (first octet 0-223)
+    ipAddress = (Math.floor(Math.random() * 223) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
+
+    myQuestions = [
+        {
+            question: "What class is this IP address?",
+            ipAddress: ipAddress,
+            subnetMask: subnetMask,
+            answers: {
+                a: "Class A",
+                b: "Class B",
+                c: "Class C"
+            },
+            correctAnswer : "b"
+        },
+        {
+            question: "Number of bits taken by subnet",
+            ipAddress: ipAddress,
+            subnetMask: subnetMask,
+            answers: {
+                a: "8",
+                b: "10",
+                c: "12"
+            },
+            correctAnswer : "c"
+        },
+        {
+            question: "Network ID",
+            ipAddress: ipAddress,
+            subnetMask: subnetMask,
+            answers: {
+                a: "188.26.0.0",
+                b: "188.0.0.0",
+                c: "188.262.221.0"
+            },
+            correctAnswer : "a"
+        },
+        {
+            question: "Subnet ID",
+            ipAddress: ipAddress,
+            subnetMask: subnetMask,
+            answers: {
+                a: "188.26.221.64",
+                b: "188.26.221.96",
+                c: "188.26.221.255"
+            },
+            correctAnswer : "b"
+        },
+    ]
+
+}
 
 function buildQuiz(){
     // variable to store HTML output
@@ -33,7 +85,22 @@ function buildQuiz(){
             // add this question and its answer to the output
             output.push(
                 `<div class="slide">
-                    <h3>${currentQuestion.ipAddress}</h3>
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col">IP </th>
+                                <th scope="col">Subnet Mask</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${currentQuestion.ipAddress}</td>
+                                <td>${currentQuestion.subnetMask}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <br>
                     <p> ${currentQuestion.question} </p>
                     <div class="answers"> ${answers.join('')} </div>
                 </div>`
@@ -79,6 +146,8 @@ function showResults(){
 
   // show number of correct answers out of total
   resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+
+//   showAllSlides();
 }
 
 function showSlide(n) {
@@ -109,55 +178,24 @@ function showPreviousSlide() {
     showSlide(currentSlide - 1);
 }
 
+// function showAllSlides() {
+//     slides.forEach ((slideObj) => {
+//         slideObj.classList.add('active-slide');
+//     }
+//     );
+// }
+
 // Variables 
+var ipAddress = "";
+var subnetMask = "255.255.255.240";
 const quizContainer = document.getElementById('quiz');
 const resultsContainer = document.getElementById('results');
 const submitButton = document.getElementById('submit');
-const myQuestions = [
-    {
-        question: "What class is this IP address?",
-        ipAddress: "188.26.221.100",
-        answers: {
-            a: "Class A",
-            b: "Class B",
-            c: "Class C"
-        },
-        correctAnswer : "b"
-    },
-    {
-        question: "What class is this IP address?",
-        ipAddress: "128.125.132.191",
-        answers: {
-            a: "Class A",
-            b: "Class B",
-            c: "Class C"
-        },
-        correctAnswer : "b"
-    },
-    {
-        question: "What class is this IP address?",
-        ipAddress: "83.93.100.48",
-        answers: {
-            a: "Class A",
-            b: "Class B",
-            c: "Class C"
-        },
-        correctAnswer : "a"
-    },
-    {
-        question: "What class is this IP address?",
-        ipAddress: "204.158.32.45 ",
-        answers: {
-            a: "Class A",
-            b: "Class B",
-            c: "Class C"
-        },
-        correctAnswer : "c"
-    },
-]
+var myQuestions = []
 
 
 // Kick things off
+generateData();
 buildQuiz();
 
 // Pagination
