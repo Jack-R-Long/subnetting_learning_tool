@@ -1,37 +1,50 @@
 // Functions
 function generateData() {
     // Generate random IP address.  Only Class A, B, C (first octet 0-223)
-    var firstOctet = Math.floor(Math.random() * 223) + 1;
-    var secondOctet = Math.floor(Math.random() * 255) + 1;
-    var thirdOctet = Math.floor(Math.random() * 255) + 1;
-    var fourthOctet = Math.floor(Math.random() * 255) + 1;
+    var firstOctet = generateRandomOctet();
+    var secondOctet = generateRandomOctet();
+    var thirdOctet = generateRandomOctet();
+    var fourthOctet = generateRandomOctet();
     ipAddress = firstOctet + "." + secondOctet + "." + thirdOctet + "." + fourthOctet;
     
     // Determine IP class and classful subnet mask
     var ipClass = '';
     var classfulSubnetMask = [255, 255, 255, 255];
+    var classlessSubnetMask = "";
     var networkIDAnswer = '';
     if (firstOctet < 128) {
         ipClass = 'a';
         classfulSubnetMask = [255, 0, 0, 0];
+        classlessSubnetMask = "255." + generateRandomOctet() + "." + generateRandomOctet() + "." + generateRandomOctet();
         networkIDAnswer = 'b';
     } else if ( firstOctet < 193){
         ipClass = 'b';
         classfulSubnetMask = [255, 255, 0, 0];
+        classlessSubnetMask = "255.255" + "." + generateRandomOctet() + "." + generateRandomOctet();
         networkIDAnswer = 'c';
     } else {
         ipClass = 'c';
         classfulSubnetMask = [255, 255, 255, 0];
+        classlessSubnetMask = "255.255.255." + generateRandomOctet();
         networkIDAnswer = 'a';
     }
     
-    // Determine network ID. Boolean AND of IP address and classfull subnetmask
+    // Determine network ID with Boolean opertation (IP AND classfull subnetmask)
     var networkID = String(firstOctet & classfulSubnetMask[0]) + '.' + String(secondOctet & classfulSubnetMask[1]) + '.' + String(thirdOctet & classfulSubnetMask[2]) + '.' + String(fourthOctet & classfulSubnetMask[3]); 
     // Create network ID answers
     var networkIDAnswers = {
         a: firstOctet + "." + secondOctet + "." + thirdOctet + "." + "0",
         b: firstOctet + "." + "0" + "." + "0" + "." + "0",
         c: firstOctet + "." + secondOctet + "." + "0" + "." + "0", 
+    }
+
+    // Determine subnet ID with Boolean operation (IP AND classLESS subnetmask)
+    var subnetOctects = classlessSubnetMask.split(".");
+    var subnetID = String(firstOctet & subnetOctects[0]) + '.' + String(secondOctet & subnetOctects[1]) + '.' + String(thirdOctet & subnetOctects[2]) + '.' + String(fourthOctet & subnetOctects[3]); 
+    var subnetIDAnswers = {
+        a: firstOctet + "." + secondOctet + "." + generateRandomOctet() + "." + generateRandomOctet(),
+        b: subnetID,
+        c: firstOctet + "." + secondOctet + "." + generateRandomOctet() + "." + generateRandomOctet(),
     }
 
 
@@ -41,7 +54,7 @@ function generateData() {
         {
             question: "What class is this IP address?",
             ipAddress: ipAddress,
-            subnetMask: subnetMask,
+            subnetMask: classlessSubnetMask,
             answers: {
                 a: "Class A",
                 b: "Class B",
@@ -52,34 +65,34 @@ function generateData() {
         {
             question: "Network ID",
             ipAddress: ipAddress,
-            subnetMask: subnetMask,
+            subnetMask: classlessSubnetMask,
             answers: networkIDAnswers,
             correctAnswer : networkIDAnswer,
         },
-        {
-            question: "Number of bits taken by subnet",
-            ipAddress: ipAddress,
-            subnetMask: subnetMask,
-            answers: {
-                a: "8",
-                b: "10",
-                c: "12"
-            },
-            correctAnswer : "c"
-        },
+        // {
+        //     question: "Number of bits taken by subnet",
+        //     ipAddress: ipAddress,
+        //     subnetMask: subnetMask,
+        //     answers: {
+        //         a: "8",
+        //         b: "10",
+        //         c: "12"
+        //     },
+        //     correctAnswer : "c"
+        // },
         {
             question: "Subnet ID",
             ipAddress: ipAddress,
-            subnetMask: subnetMask,
-            answers: {
-                a: "188.26.221.64",
-                b: "188.26.221.96",
-                c: "188.26.221.255"
-            },
+            subnetMask: classlessSubnetMask,
+            answers: subnetIDAnswers,
             correctAnswer : "b"
         },
     ]
 
+}
+
+function generateRandomOctet(){
+    return Math.floor(Math.random() * 223) + 1;
 }
 
 function buildQuiz(){
