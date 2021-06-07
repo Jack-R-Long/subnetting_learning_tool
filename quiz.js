@@ -1,8 +1,18 @@
 // Functions
 function generateData() {
     // Generate random IP address.  Only Class A, B, C (first octet 0-223)
-    ipAddress = (Math.floor(Math.random() * 223) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
+    var firstOctet = Math.floor(Math.random() * 223) + 1;
+    ipAddress = firstOctet +"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
 
+    // Determine IP class
+    var ipClass = '';
+    if (firstOctet < 128) {
+        ipClass = 'a';
+    } else if ( firstOctet < 193){
+        ipClass = 'b';
+    } else {
+        ipClass = 'c';
+    }
     myQuestions = [
         {
             question: "What class is this IP address?",
@@ -13,7 +23,7 @@ function generateData() {
                 b: "Class B",
                 c: "Class C"
             },
-            correctAnswer : "b"
+            correctAnswer : ipClass
         },
         {
             question: "Number of bits taken by subnet",
@@ -185,6 +195,10 @@ function showPreviousSlide() {
 //     );
 // }
 
+function reloadPage() {
+    window.location.reload()
+}
+
 // Variables 
 var ipAddress = "";
 var subnetMask = "255.255.255.240";
@@ -211,3 +225,4 @@ showSlide(currentSlide);
 submitButton.addEventListener('click', showResults);
 previousButton.addEventListener("click", showPreviousSlide);
 nextButton.addEventListener("click", showNextSlide);
+refreshButton.addEventListener("click", location.reload());
