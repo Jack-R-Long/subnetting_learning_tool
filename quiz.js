@@ -7,26 +7,33 @@ function generateData() {
     var fourthOctet = generateRandomOctet();
     ipAddress = firstOctet + "." + secondOctet + "." + thirdOctet + "." + fourthOctet;
     
+    // Generate subnet values
+    var classfulSubnetMask = [255, 255, 255, 255];
+    var classlessSubnetMask = "";
+    var [subnetOctetofInterest, bitsTakenSubnet] = generateRandomSubnetOctet();
+    // var subnetValuesArray = subnetValuesArray[0];
+    // var bitsTakenSubnet = subnetValuesArray[1];
 
     // Determine IP class and classful subnet mask
     var ipClass = '';
-    var classfulSubnetMask = [255, 255, 255, 255];
-    var classlessSubnetMask = "";
     var networkIDAnswer = '';
     if (firstOctet < 128) {
         ipClass = 'a';
         classfulSubnetMask = [255, 0, 0, 0];
-        classlessSubnetMask = "255." + generateRandomSubnetOctet() + ".0.0.0";
+        classlessSubnetMask = "255." + subnetOctetofInterest + ".0.0.0";
+        bitsTakenSubnet += 8;
         networkIDAnswer = 'b';
     } else if ( firstOctet < 193){
         ipClass = 'b';
         classfulSubnetMask = [255, 255, 0, 0];
-        classlessSubnetMask = "255.255" + "." + generateRandomSubnetOctet() + ".0";
+        classlessSubnetMask = "255.255" + "." + subnetOctetofInterest + ".0";
+        bitsTakenSubnet += 16;
         networkIDAnswer = 'c';
     } else {
         ipClass = 'c';
         classfulSubnetMask = [255, 255, 255, 0];
-        classlessSubnetMask = "255.255.255." + generateRandomSubnetOctet();
+        classlessSubnetMask = "255.255.255." + subnetOctetofInterest;
+        bitsTakenSubnet += 24;
         networkIDAnswer = 'a';
     }
     
@@ -57,6 +64,7 @@ function generateData() {
             questionType: "multiple choice",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
+            cidrBits: bitsTakenSubnet,
             answers: {
                 a: "Class A",
                 b: "Class B",
@@ -69,6 +77,7 @@ function generateData() {
             questionType: "multiple choice",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
+            cidrBits: bitsTakenSubnet,
             answers: networkIDAnswers,
             correctAnswer : networkIDAnswer,
         },
@@ -77,6 +86,7 @@ function generateData() {
             questionType: "input answer",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
+            cidrBits: bitsTakenSubnet,
             answers: subnetIDAnswers,
             correctAnswer : subnetID
         },
@@ -90,7 +100,7 @@ function generateRandomOctet(){
 function generateRandomSubnetOctet(){
     var possibleVals = [128, 192, 224, 240, 248, 252, 254, 255];
     var randomIndex = Math.floor(Math.random() * 8);
-    return possibleVals[randomIndex];
+    return [possibleVals[randomIndex], randomIndex + 1];
 } 
 
 function buildQuiz(){
@@ -144,13 +154,15 @@ function buildQuiz(){
                     <table class="table table-dark">
                         <thead>
                             <tr>
-                                <th scope="col">IP </th>
+                                <th scope="col">IP</th>
+                                <th scope="col">CIDR</th>
                                 <th scope="col">Subnet Mask</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>${currentQuestion.ipAddress}</td>
+                                <td>/${currentQuestion.cidrBits}</td>
                                 <td>${currentQuestion.subnetMask}</td>
                             </tr>
                         </tbody>
