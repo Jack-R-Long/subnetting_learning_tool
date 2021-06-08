@@ -1,7 +1,7 @@
 // Functions
 function generateData() {
     // Generate random IP address.  Only Class A, B, C (first octet 0-223)
-    var firstOctet = generateRandomOctet();
+    var firstOctet = generateRandomOctet(223);
     var secondOctet = generateRandomOctet();
     var thirdOctet = generateRandomOctet();
     var fourthOctet = generateRandomOctet();
@@ -94,8 +94,8 @@ function generateData() {
 
 }
 
-function generateRandomOctet(){
-    return Math.floor(Math.random() * 255) + 1;
+function generateRandomOctet(upperLimit = 255){
+    return Math.floor(Math.random() * upperLimit) + 1;
 }
 function generateRandomSubnetOctet(){
     var possibleVals = [128, 192, 224, 240, 248, 252, 254, 255];
