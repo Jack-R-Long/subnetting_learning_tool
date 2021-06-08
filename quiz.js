@@ -43,7 +43,7 @@ function generateData() {
     var subnetOctects = classlessSubnetMask.split(".");
     var subnetID = String(firstOctet & subnetOctects[0]) + '.' + String(secondOctet & subnetOctects[1]) + '.' + String(thirdOctet & subnetOctects[2]) + '.' + String(fourthOctet & subnetOctects[3]); 
     var subnetIDAnswers = {
-        a: firstOctet + "." + secondOctet + "." + generateRandomOctet() + "." + generateRandomOctet(),
+        a: firstOctet + "." + secondOctet + "." + generateRandomSubnetOctet() + ".0",
         b: subnetID,
         c: firstOctet + "." + secondOctet + "." + generateRandomOctet() + "." + generateRandomOctet(),
     }
@@ -204,6 +204,7 @@ function showResults(){
       if (currentQuestion.questionType == "multiple choice"){
           answerContainers[questionNumber].style.color = 'lightgreen';
       } else {
+          showAnswers(false);
           colorAnswers('lightgreen')
       }
     }
@@ -213,6 +214,7 @@ function showResults(){
         if (currentQuestion.questionType == "multiple choice"){
           answerContainers[questionNumber].style.color = 'red';
       } else {
+          showAnswers(true);
           colorAnswers('red');
       }
     }
@@ -221,7 +223,6 @@ function showResults(){
   // show number of correct answers out of total
   resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
   //   Show correct answer for input
-  toggleAnswers();
 }
 
 function showSlide(n) {
@@ -256,11 +257,11 @@ function reloadPage() {
     window.location.reload();
 }
 
-function toggleAnswers(){
+function showAnswers(display_bool){
     var answerElements = document.getElementsByClassName('inputAnswers');
     // Answer elemnts is an HTML collection so we have to do some funky stuff
     Array.prototype.forEach.call(answerElements, function(answerElement) {
-        if (answerElement.style.display == "none") {
+        if (display_bool) {
             answerElement.style.display = "block";
         } else {
             answerElement.style.display = "none";
@@ -297,7 +298,7 @@ let currentSlide = 0;
 
 // Show first slide
 showSlide(currentSlide);
-toggleAnswers();
+showAnswers(false);
 
 // Event listeners
 submitButton.addEventListener('click', showResults);
