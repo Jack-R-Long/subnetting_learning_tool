@@ -7,6 +7,7 @@ function generateData() {
     var fourthOctet = generateRandomOctet();
     ipAddress = firstOctet + "." + secondOctet + "." + thirdOctet + "." + fourthOctet;
     
+
     // Determine IP class and classful subnet mask
     var ipClass = '';
     var classfulSubnetMask = [255, 255, 255, 255];
@@ -15,17 +16,17 @@ function generateData() {
     if (firstOctet < 128) {
         ipClass = 'a';
         classfulSubnetMask = [255, 0, 0, 0];
-        classlessSubnetMask = "255." + generateRandomOctet() + "." + generateRandomOctet() + "." + generateRandomOctet();
+        classlessSubnetMask = "255." + generateRandomSubnetOctet() + ".0.0.0";
         networkIDAnswer = 'b';
     } else if ( firstOctet < 193){
         ipClass = 'b';
         classfulSubnetMask = [255, 255, 0, 0];
-        classlessSubnetMask = "255.255" + "." + generateRandomOctet() + "." + generateRandomOctet();
+        classlessSubnetMask = "255.255" + "." + generateRandomSubnetOctet() + ".0";
         networkIDAnswer = 'c';
     } else {
         ipClass = 'c';
         classfulSubnetMask = [255, 255, 255, 0];
-        classlessSubnetMask = "255.255.255." + generateRandomOctet();
+        classlessSubnetMask = "255.255.255." + generateRandomSubnetOctet();
         networkIDAnswer = 'a';
     }
     
@@ -92,8 +93,13 @@ function generateData() {
 }
 
 function generateRandomOctet(){
-    return Math.floor(Math.random() * 223) + 1;
+    return Math.floor(Math.random() * 255) + 1;
 }
+function generateRandomSubnetOctet(){
+    var possibleVals = [128, 192, 224, 240, 248, 252, 254, 255];
+    var randomIndex = Math.floor(Math.random() * 8);
+    return possibleVals[randomIndex];
+} 
 
 function buildQuiz(){
     // variable to store HTML output
