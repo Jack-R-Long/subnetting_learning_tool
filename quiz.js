@@ -20,7 +20,7 @@ function generateData() {
     if (firstOctet < 128) {
         ipClass = 'a';
         classfulSubnetMask = [255, 0, 0, 0];
-        classlessSubnetMask = "255." + subnetOctetofInterest + ".0.0.0";
+        classlessSubnetMask = "255." + subnetOctetofInterest + ".0.0";
         bitsTakenSubnet += 8;
         networkIDAnswer = 'b';
     } else if ( firstOctet < 193){
@@ -139,7 +139,7 @@ function buildQuiz(){
                     `
                     <div class="form-group">
                     <p class="inputAnswers">${currentQuestion.correctAnswer}</p>
-                    <input class="form-control text-center" type="text" name="question${questionNumber}" placeholder="255.255.255.255" value="" id="input_${questionNumber}">
+                    <input class="form-control" type="text" name="question${questionNumber}" placeholder="255.255.255.255" value="" id="input_${questionNumber}">
                     </div>
                     `
                 );
