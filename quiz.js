@@ -54,6 +54,7 @@ function generateData() {
     myQuestions = [
         {
             question: "What class is this IP address?",
+            questionType: "multiple choice",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
             answers: {
@@ -65,28 +66,19 @@ function generateData() {
         },
         {
             question: "Network ID",
+            questionType: "multiple choice",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
             answers: networkIDAnswers,
             correctAnswer : networkIDAnswer,
         },
-        // {
-        //     question: "Number of bits taken by subnet",
-        //     ipAddress: ipAddress,
-        //     subnetMask: subnetMask,
-        //     answers: {
-        //         a: "8",
-        //         b: "10",
-        //         c: "12"
-        //     },
-        //     correctAnswer : "c"
-        // },
         {
             question: "Subnet ID",
+            questionType: "input answer",
             ipAddress: ipAddress,
             subnetMask: classlessSubnetMask,
             answers: subnetIDAnswers,
-            correctAnswer : "b"
+            correctAnswer : subnetID
         },
     ]
 
@@ -115,25 +107,40 @@ function buildQuiz(){
             // create row
             answers.push(`<div class="form-check">`)
 
-            // and for each avaliable answer
-            for(letter in currentQuestion.answers) {
+            // Generate radio buttons for multiple choice
+            if (currentQuestion.questionType == "multiple choice") {
+                for(letter in currentQuestion.answers) {
+    
+                    // add HTML button
+                    answers.push(
+                        `
+                        <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="question${questionNumber}" value="${letter}">
+                        <label class="form-check-label" for="question${questionNumber}">${currentQuestion.answers[letter]}</label>
+                        </div>
+                        `
+                    );
+                }
+            }
 
-                // add HTML button
+            // Generate input field for fill in the blank
+            else if (currentQuestion.questionType = "input answer") {
                 answers.push(
                     `
-                    <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="question${questionNumber}" value="${letter}">
-                    <label class="form-check-label" for="question${questionNumber}">${currentQuestion.answers[letter]}</label>
+                    <div class="form-group">
+                    <p class="inputAnswers">${currentQuestion.correctAnswer}</p>
+                    <input class="form-control text-center" type="text" name="question${questionNumber}" placeholder="255.255.255.255" value="" id="input_${questionNumber}">
                     </div>
                     `
                 );
             }
+
             // close form
             answers.push(`</div>`)
 
             // add this question and its answer to the output
             output.push(
-                `<div class="slide">
+                `<div class="slide mb-3">
                     <table class="table table-dark">
                         <thead>
                             <tr>
@@ -175,8 +182,18 @@ function showResults(){
 
     // find selected answer
     const answerContainer = answerContainers[questionNumber];
-    const selector = `input[name=question${questionNumber}]:checked`;
-    const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+    const inputAnswer = document.getElementById(`input_${questionNumber}`);
+    var userAnswer = "";
+
+    // Find mc answers
+    if (currentQuestion.questionType == "multiple choice"){
+        const selector = `input[name=question${questionNumber}]:checked`;
+        userAnswer = (answerContainer.querySelector(selector) || {}).value;
+    }
+    else if (currentQuestion.questionType == "input answer"){
+        // get id of input field
+        userAnswer = inputAnswer.value;
+    }
 
     // if answer is correct
     if(userAnswer === currentQuestion.correctAnswer){
@@ -184,19 +201,27 @@ function showResults(){
       numCorrect++;
 
       // color the answers green
-      answerContainers[questionNumber].style.color = 'lightgreen';
+      if (currentQuestion.questionType == "multiple choice"){
+          answerContainers[questionNumber].style.color = 'lightgreen';
+      } else {
+          colorAnswers('lightgreen')
+      }
     }
     // if answer is wrong or blank
     else{
       // color the answers red
-      answerContainers[questionNumber].style.color = 'red';
+        if (currentQuestion.questionType == "multiple choice"){
+          answerContainers[questionNumber].style.color = 'red';
+      } else {
+          colorAnswers('red');
+      }
     }
   });
 
   // show number of correct answers out of total
   resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
-
-//   showAllSlides();
+  //   Show correct answer for input
+  toggleAnswers();
 }
 
 function showSlide(n) {
@@ -227,20 +252,33 @@ function showPreviousSlide() {
     showSlide(currentSlide - 1);
 }
 
-// function showAllSlides() {
-//     slides.forEach ((slideObj) => {
-//         slideObj.classList.add('active-slide');
-//     }
-//     );
-// }
-
 function reloadPage() {
-    window.location.reload()
+    window.location.reload();
+}
+
+function toggleAnswers(){
+    var answerElements = document.getElementsByClassName('inputAnswers');
+    // Answer elemnts is an HTML collection so we have to do some funky stuff
+    Array.prototype.forEach.call(answerElements, function(answerElement) {
+        if (answerElement.style.display == "none") {
+            answerElement.style.display = "block";
+        } else {
+            answerElement.style.display = "none";
+        }
+    });
+}
+
+function colorAnswers(textColor) {
+    var answerElements = document.getElementsByClassName('inputAnswers');
+    // Answer elemnts is an HTML collection so we have to do some funky stuff
+    Array.prototype.forEach.call(answerElements, function(answerElement) {
+            answerElement.style.color = textColor;
+    });
 }
 
 // Variables 
 var ipAddress = "";
-var subnetMask = "255.255.255.240";
+var subnetMask = "";
 const quizContainer = document.getElementById('quiz');
 const resultsContainer = document.getElementById('results');
 const submitButton = document.getElementById('submit');
@@ -259,6 +297,7 @@ let currentSlide = 0;
 
 // Show first slide
 showSlide(currentSlide);
+toggleAnswers();
 
 // Event listeners
 submitButton.addEventListener('click', showResults);
