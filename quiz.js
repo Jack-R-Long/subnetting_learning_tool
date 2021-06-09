@@ -49,6 +49,7 @@ function generateData() {
     // Determine subnet ID with Boolean operation (IP AND classLESS subnetmask)
     var subnetOctects = classlessSubnetMask.split(".");
     var subnetID = String(firstOctet & subnetOctects[0]) + '.' + String(secondOctet & subnetOctects[1]) + '.' + String(thirdOctet & subnetOctects[2]) + '.' + String(fourthOctet & subnetOctects[3]); 
+    var firstValidHost = convertIPtoBinary(subnetID);
     var subnetIDAnswers = {
         a: firstOctet + "." + secondOctet + "." + generateRandomSubnetOctet() + ".0",
         b: subnetID,
@@ -90,6 +91,15 @@ function generateData() {
             answers: subnetIDAnswers,
             correctAnswer : subnetID
         },
+        {
+            question: "What is the first valid host?",
+            questionType: "input answer",
+            ipAddress: ipAddress,
+            subnetMask: classlessSubnetMask,
+            cidrBits: bitsTakenSubnet,
+            answers: subnetIDAnswers,
+            correctAnswer : firstValidHost
+        },
     ]
 
 }
@@ -97,11 +107,28 @@ function generateData() {
 function generateRandomOctet(upperLimit = 255){
     return Math.floor(Math.random() * upperLimit) + 1;
 }
+
 function generateRandomSubnetOctet(){
     var possibleVals = [128, 192, 224, 240, 248, 252, 254, 255];
     var randomIndex = Math.floor(Math.random() * 8);
     return [possibleVals[randomIndex], randomIndex + 1];
 } 
+
+function convertIPtoBinary(ipString) {
+    let stringStriped = ipString.replaceAll('.', '');
+    console.log(stringStriped);
+    let ipBinary = parseInt(stringStriped, 2);
+    console.log(ipBinary);
+    return ipBinary;
+}
+
+function findFirstValidHost(subnetIDString){
+    console.log(subnetIDString)
+    let subnetBinary = parseInt(subnetIDString, 2);
+    console.log(subnetBinary);
+    return subnetIDString;
+
+}
 
 function buildQuiz(){
     // variable to store HTML output
