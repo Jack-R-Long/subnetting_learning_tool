@@ -164,7 +164,7 @@ function buildQuiz(){
                 answers.push(
                     `
                     <div class="form-group">
-                    <p class="inputAnswers">${currentQuestion.correctAnswer}</p>
+                    <p class="inputAnswers" id="answer${questionNumber}">${currentQuestion.correctAnswer}</p>
                     <input class="form-control" type="text" name="question${questionNumber}" placeholder="255.255.255.255" value="" id="input_${questionNumber}">
                     </div>
                     `
@@ -242,8 +242,8 @@ function showResults(){
       if (currentQuestion.questionType == "multiple choice"){
           answerContainers[questionNumber].style.color = 'lightgreen';
       } else {
-          showAnswers(false);
-          colorAnswers('lightgreen')
+          showAnswers(true);
+          colorAnswers(questionNumber,'lightgreen')
       }
     }
     // if answer is wrong or blank
@@ -253,14 +253,13 @@ function showResults(){
           answerContainers[questionNumber].style.color = 'red';
       } else {
           showAnswers(true);
-          colorAnswers('red');
+          colorAnswers(questionNumber, 'red');
       }
     }
   });
 
   // show number of correct answers out of total
   resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
-  //   Show correct answer for input
 }
 
 function showSlide(n) {
@@ -307,12 +306,9 @@ function showAnswers(display_bool){
     });
 }
 
-function colorAnswers(textColor) {
-    var answerElements = document.getElementsByClassName('inputAnswers');
-    // Answer elemnts is an HTML collection so we have to do some funky stuff
-    Array.prototype.forEach.call(answerElements, function(answerElement) {
-            answerElement.style.color = textColor;
-    });
+function colorAnswers(questionNum, textColor) {
+    var answerElement = document.getElementById('answer' + String(questionNum));
+    answerElement.style.color = textColor;
 }
 
 // Variables 
