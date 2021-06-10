@@ -49,7 +49,7 @@ function generateData() {
     // Determine subnet ID with Boolean operation (IP AND classLESS subnetmask)
     var subnetOctects = classlessSubnetMask.split(".");
     var subnetID = String(firstOctet & subnetOctects[0]) + '.' + String(secondOctet & subnetOctects[1]) + '.' + String(thirdOctet & subnetOctects[2]) + '.' + String(fourthOctet & subnetOctects[3]); 
-    var firstValidHost = convertIPtoBinary(subnetID);
+    var firstValidHost = findFirstValidHost(subnetID);
     var subnetIDAnswers = {
         a: firstOctet + "." + secondOctet + "." + generateRandomSubnetOctet() + ".0",
         b: subnetID,
@@ -114,20 +114,19 @@ function generateRandomSubnetOctet(){
     return [possibleVals[randomIndex], randomIndex + 1];
 } 
 
-function convertIPtoBinary(ipString) {
-    let stringStriped = ipString.replaceAll('.', '');
-    console.log(stringStriped);
-    let ipBinary = parseInt(stringStriped, 2);
-    console.log(ipBinary);
-    return ipBinary;
+function convertIPToInt(ipString) {
+    // Function taken from https://tech.mybuilder.com/determining-if-an-ipv4-address-is-within-a-cidr-range-in-javascript/
+    return ipString.split('.').reduce((int, oct) => (int << 8) + parseInt(oct, 10), 0) >>> 0;
+}
+
+function convertIntToIP(int) {
+    // Function taken from https://tech.mybuilder.com/determining-if-an-ipv4-address-is-within-a-cidr-range-in-javascript/
+    return [(int >>> 24) & 0xFF, (int >>> 16) & 0xFF, (int >>> 8) & 0xFF, int & 0xFF].join('.');
 }
 
 function findFirstValidHost(subnetIDString){
-    console.log(subnetIDString)
-    let subnetBinary = parseInt(subnetIDString, 2);
-    console.log(subnetBinary);
-    return subnetIDString;
-
+    let firstValidHostVal = convertIPToInt(subnetIDString) + 1;    
+    return convertIntToIP(firstValidHostVal);
 }
 
 function buildQuiz(){
